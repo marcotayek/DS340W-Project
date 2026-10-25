@@ -1,0 +1,33 @@
+file,column,meaning,origin
+player_seasons_2014_2025.csv,id,Stable Understat player ID,source
+player_seasons_2014_2025.csv,player_name,Player name,source
+player_seasons_2014_2025.csv,team_title,Club for that player-season record,source
+player_seasons_2014_2025.csv,league,League code,source
+player_seasons_2014_2025.csv,season_label,Season such as 2024-25,derived
+player_seasons_2014_2025.csv,is_partial_season,True for current 2025-26 rows,derived
+player_seasons_2014_2025.csv,time,Minutes played,source
+player_seasons_2014_2025.csv,goals,Goals,source
+player_seasons_2014_2025.csv,xG,Expected goals,source
+player_seasons_2014_2025.csv,npxG,Non-penalty expected goals,source
+player_seasons_2014_2025.csv,assists,Assists,source
+player_seasons_2014_2025.csv,xA,Expected assists,source
+player_seasons_2014_2025.csv,shots,Shots,source
+player_seasons_2014_2025.csv,key_passes,Passes leading to shots,source
+player_seasons_2014_2025.csv,xGChain,xG from possession chains involving player,source
+player_seasons_2014_2025.csv,xGBuildup,xG buildup involvement,source
+player_seasons_2014_2025.csv,goals_p90,Goals normalized to 90 minutes,derived
+player_seasons_2014_2025.csv,xg_p90,xG normalized to 90 minutes,derived
+player_seasons_2014_2025.csv,assists_p90,Assists normalized to 90 minutes,derived
+player_seasons_2014_2025.csv,xa_p90,xA normalized to 90 minutes,derived
+player_seasons_2014_2025.csv,goal_contrib_p90,Goals/90 + assists/90,derived
+player_seasons_2014_2025.csv,expected_contrib_p90,xG/90 + xA/90,derived
+player_seasons_2014_2025.csv,finishing_vs_xg_p90,Goals/90 minus xG/90,derived
+player_seasons_2014_2025.csv,team_xg_per_match,Team attack proxy,derived
+player_seasons_2014_2025.csv,team_attack_strength_index,Team xG/match divided by league-season average,derived
+player_seasons_2014_2025.csv,league_avg_team_xg_per_match,League scoring/chance environment proxy,derived
+pl_outgoing_attacker_transfers.csv,delta_expected_output_p90,Post minus pre (xG/90 + xA/90),derived target
+pl_outgoing_attacker_transfers.csv,delta_attacking_output_p90,Post minus pre (goals/90 + assists/90),derived outcome
+pl_outgoing_attacker_transfers.csv,improved_expected_output,1 if expected attacking output/90 increased,derived target
+pl_outgoing_attacker_transfers.csv,delta_team_attack_strength_index,Change in team attacking context,derived predictor
+pl_outgoing_attacker_transfers.csv,delta_league_avg_team_xg_per_match,Change in league scoring environment,derived predictor
+pl_outgoing_attacker_transfers.csv,post_season_partial,True if destination season is 2025-26,derived

@@ -1,0 +1,22 @@
+field,description,type
+player,Player name,text
+transfer_date,Date of transfer,date
+old_club,Premier League club before transfer,text
+new_club,Destination club,text
+destination_league,League joined after transfer,text
+pre_minutes,Minutes in pre-transfer window,numeric
+post_minutes,Minutes in post-transfer window,numeric
+pre_goals_per90,Goals per 90 before transfer,numeric
+post_goals_per90,Goals per 90 after transfer,numeric
+pre_assists_per90,Assists per 90 before transfer,numeric
+post_assists_per90,Assists per 90 after transfer,numeric
+pre_shots_per90,Shots per 90 before transfer,numeric
+post_shots_per90,Shots per 90 after transfer,numeric
+pre_xg_per90,Expected goals per 90 before transfer,numeric
+post_xg_per90,Expected goals per 90 after transfer,numeric
+team_strength_change,Change in team strength,numeric
+league_strength_change,Change in league strength,numeric
+playing_time_change,Change in playing time,numeric
+role_change,Change in attacking role,text
+formation_change,Change in formation/context,text
+improvement_score,Before/after improvement target,numeric
