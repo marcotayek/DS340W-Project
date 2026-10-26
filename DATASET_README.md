@@ -7,7 +7,7 @@ This package expands the expected-goals/player-performance concepts from the fir
 ## Coverage
 The builder downloads an Understat-derived public player dataset covering:
 - 2014/15 through 2024/25 completed seasons
-- 2025/26 current season (partial)
+- 2025/26 completed season
 
 Big Five leagues used:
 - Premier League
@@ -65,6 +65,7 @@ From the project folder:
 
 ```bash
 pip install pandas numpy
+python fetch_2025_26_stats.py
 python build_dataset.py
 ```
 
@@ -73,4 +74,12 @@ The CSV files will appear in the `data/` folder.
 ## Important methodology note
 `league_avg_team_xg_per_match` is a **scoring-environment proxy**, not an official league-quality ranking. It should be described that way in the paper/presentation.
 
-2025/26 is still in progress and is marked as partial.
+2025/26 is complete; the direct Understat extract replaces the September 2025 snapshot.
+
+## Verified full 2025/26 statistics
+
+`data/player_stats_2025_26.csv`: 2,775 player-league-season records (EPL 537; La Liga 600; Bundesliga 499; Serie A 586; Ligue 1 553). Includes minutes, appearances, goals, assists, shots, key passes, xG, npxG, xA, xGChain, xGBuildup, cards, positions and IDs. Source URLs and retrieval times are included.
+
+Validated all 1,752 completed domestic league fixtures: EPL/La Liga/Serie A 380 each; Bundesliga/Ligue 1 306 each. Every team has 38 or 34 completed matches. Details in `data/coverage_2025_26.json`. Cups and European competitions are excluded. Schedule coverage does not independently audit every player statistic.
+
+Understat can combine clubs within a player-league-season row; comma-separated team names are not separate club spells. Season-to-season moves are inferred candidates, not independently verified transfer dates. Source: https://understat.com/league/EPL/2025 (and equivalent pages for the other four leagues).

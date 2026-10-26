@@ -1,0 +1,52 @@
+[
+  {
+    "league": "EPL",
+    "player_rows": 537,
+    "completed_matches": 380,
+    "expected_matches": 380,
+    "teams": 20,
+    "first_match": "2025-08-15 19:00:00",
+    "last_match": "2026-05-24 15:00:00",
+    "source_url": "https://understat.com/getLeagueData/EPL/2025"
+  },
+  {
+    "league": "La_Liga",
+    "player_rows": 600,
+    "completed_matches": 380,
+    "expected_matches": 380,
+    "teams": 20,
+    "first_match": "2025-08-15 17:00:00",
+    "last_match": "2026-05-24 19:00:00",
+    "source_url": "https://understat.com/getLeagueData/La_Liga/2025"
+  },
+  {
+    "league": "Bundesliga",
+    "player_rows": 499,
+    "completed_matches": 306,
+    "expected_matches": 306,
+    "teams": 18,
+    "first_match": "2025-08-22 18:30:00",
+    "last_match": "2026-05-16 13:30:00",
+    "source_url": "https://understat.com/getLeagueData/Bundesliga/2025"
+  },
+  {
+    "league": "Serie_A",
+    "player_rows": 586,
+    "completed_matches": 380,
+    "expected_matches": 380,
+    "teams": 20,
+    "first_match": "2025-08-23 16:30:00",
+    "last_match": "2026-05-24 18:45:00",
+    "source_url": "https://understat.com/getLeagueData/Serie_A/2025"
+  },
+  {
+    "league": "Ligue_1",
+    "player_rows": 553,
+    "completed_matches": 306,
+    "expected_matches": 306,
+    "teams": 18,
+    "first_match": "2025-08-15 18:45:00",
+    "last_match": "2026-05-17 19:00:00",
+    "source_url": "https://understat.com/getLeagueData/Ligue_1/2025"
+  }
+]

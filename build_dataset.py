@@ -18,7 +18,7 @@ Data source
 -----------
 https://github.com/vibedatascience/understat_players_aggregated
 The combined source file covers 2014/15 through the current 2025/26 season.
-2025/26 is partial while the season is in progress.
+2025/26 is complete; see data/coverage_2025_26.json.
 """
 
 from pathlib import Path
@@ -52,6 +52,9 @@ def safe_per90(series, minutes):
 
 def load_source():
     df = pd.read_csv(SOURCE_URL)
+    # Replace the September 2025 snapshot with the validated full season.
+    full = pd.read_csv(Path(__file__).resolve().parent / "data/player_stats_2025_26.csv")
+    df = pd.concat([df[pd.to_numeric(df["year"], errors="coerce") < 2025], full], ignore_index=True)
     # Keep Big Five for cleaner league-to-league comparison.
     df = df[df["league"].isin(TOP5)].copy()
 
@@ -70,7 +73,7 @@ def load_source():
         + "-"
         + ((df["season_start"] + 1) % 100).astype(str).str.zfill(2)
     )
-    df["is_partial_season"] = df["season_start"].eq(CURRENT_YEAR)
+    df["is_partial_season"] = df["season_start"].gt(CURRENT_YEAR)
     return df
 
 
@@ -251,7 +254,7 @@ def make_reliable_transfer_pairs(df):
 
     pairs["transfer_type"] = "EPL_to_other_league_next_season"
     pairs["direction_confidence"] = "high"
-    pairs["post_season_partial"] = pairs["season_start_post"].eq(CURRENT_YEAR)
+    pairs["post_season_partial"] = pairs["is_partial_season_post"]
 
     keep = [
         "id",
@@ -360,7 +363,7 @@ def main():
     print(f"Saved {len(enriched):,} player-club-season rows.")
     print(f"Saved {len(pairs):,} high-confidence EPL-outgoing transfer pairs.")
     print(f"Saved {len(same_season):,} same-season candidates for manual review.")
-    print("NOTE: 2025/26 is partial and is marked with is_partial_season/post_season_partial.")
+    print("2025/26 is complete; see data/coverage_2025_26.json.")
 
 
 if __name__ == "__main__":
