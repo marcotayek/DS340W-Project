@@ -1,0 +1,31 @@
+{
+  "dataset": "Public Wyscout England 2017/18 (80 matches)",
+  "model": "Original authors MLP class; adapted six-feature previous-event task",
+  "exact_reproduction": false,
+  "epochs": 30,
+  "hidden_sizes": [
+    196,
+    196,
+    196
+  ],
+  "metrics": {
+    "e": {
+      "accuracy": 0.602411866977398,
+      "macro_f1": 0.2858613235468984
+    },
+    "x": {
+      "mae": 17.67789649963379,
+      "r2": 0.2024189829826355,
+      "mae_normalized_0_1": 0.17677896499633788
+    },
+    "y": {
+      "mae": 24.205142974853516,
+      "r2": 0.16611331701278687,
+      "mae_normalized_0_1": 0.24205142974853516
+    },
+    "t": {
+      "mae": 0.5824353098869324,
+      "r2": 0.39150500297546387
+    }
+  }
+}
