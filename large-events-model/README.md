@@ -6,10 +6,13 @@ This folder documents an **adapted reproduction experiment** related to *Towards
 We use the **original authors' MLP class** from `0001 Train Tabular LEMs.py`, but use a different public Wyscout dataset, simplified previous-event features, target mappings, and training procedure. **These results are not an exact reproduction of the published benchmarks.**
 
 ## Data
-Public Wyscout 2017–18 event dataset by Pappalardo et al. (collection: https://doi.org/10.6084/m9.figshare.c.4415000). Download the **Events** and **Matches** datasets and extract `events_England.json` and `matches_England.json`. The conversion below uses 80 English league matches, split by match (seed 42): 64 training matches and 16 validation matches.
+Public Wyscout 2017–18 event dataset by Pappalardo et al. (collection: https://doi.org/10.6084/m9.figshare.c.4415000). Download the **Events** and **Matches** datasets and extract `events_England.json` and `matches_England.json`. The **new protocol** uses 100 English league matches, split by match into **70 train / 20 test / 10 validation** (seed 42 for the development-pool shuffle). Matches 91–100 in sorted match-ID order were **not part of the earlier 80-match experiment** and are reserved as a fresh holdout. Exact event counts will be printed when you run preprocessing.
 
-- Training: 104,953 usable next-event examples
-- Validation: 27,033 usable next-event examples
+- **Training (70 matches):** fit the models.
+- **Test (20 matches):** debug, compare models, and choose hyperparameters.
+- **Validation (10 matches):** sealed until model selection and code are frozen. Only run final evaluation once.
+
+The old 80/20 experiment and its JSON files remain historical results, **not** results from this new three-way split.
 
 ## Reproduce on Windows (Python 3.12)
 From inside this folder, install dependencies:
@@ -21,24 +24,33 @@ py -3.12 -m pip install -r requirements.txt
 Convert the downloaded files (adjust paths to your computer):
 
 ```powershell
-py -3.12 convert_public_wyscout.py --events "C:\path\to\events_England.json" --matches "C:\path\to\matches_England.json" --output real_wyscout --max-matches 80
+py -3.12 convert_public_wyscout.py --events "C:\path\to\events_England.json" --matches "C:\path\to\matches_England.json" --output real_wyscout_70_20_10 --max-matches 100
 ```
 
 Train and evaluate the gradient-boosting baseline:
 
 ```powershell
-py -3.12 train_real_wyscout.py --data real_wyscout
+py -3.12 train_real_wyscout.py --data real_wyscout_70_20_10 --split test
 ```
 
 Train and evaluate the authors' MLP architecture adapted to these targets:
 
 ```powershell
-py -3.12 train_authors_mlp_real.py --data real_wyscout --epochs 30
+py -3.12 train_authors_mlp_real.py --data real_wyscout_70_20_10 --epochs 30 --split test
 ```
 
-The scripts write metrics into `real_wyscout/`. A CUDA-capable GPU can accelerate the MLP; CPU is supported.
+The scripts write test metrics into `real_wyscout_70_20_10/`. A CUDA-capable GPU can accelerate the MLP; CPU is supported. `split_manifest.json` records the exact match assignments.
 
-## Validation results
+**Only after debugging, tuning, and choosing the final model**, run the following *once* and report both test and final validation scores:
+
+```powershell
+py -3.12 train_real_wyscout.py --data real_wyscout_70_20_10 --split val --final-eval
+py -3.12 train_authors_mlp_real.py --data real_wyscout_70_20_10 --epochs 30 --split val --final-eval
+```
+
+Do not use validation scores to tune the model. Note: the MLP command retrains with the chosen configuration before final evaluation; for a strictly frozen-model evaluation, retain the test-stage model checkpoints and load those weights instead. The `--final-eval` flag is a deliberate procedural guard, not a technical access restriction.
+
+## Historical results — OLD 80/20 experiment (not new 70/20/10 scores)
 
 | Metric | Gradient boosting | Adapted authors' MLP (30 epochs) |
 |---|---:|---:|
@@ -51,7 +63,7 @@ The scripts write metrics into `real_wyscout/`. A CUDA-capable GPU can accelerat
 | Time MAE (script units, lower better) | **0.5484** | 0.5824 |
 | Time R² (higher better) | **0.4180** | 0.3915 |
 
-The MLP's event accuracy advantage is only 0.05 percentage points; the baseline performs better on the other reported metrics.
+The MLP's event accuracy advantage was only 0.05 percentage points in the **old experiment**; the baseline performed better on the other reported metrics. **Do not report these as new three-way-split test or validation results.**
 
 ## Files
 - `convert_public_wyscout.py`: maps public Wyscout JSON into match-separated CSVs for next-event prediction.
