@@ -82,6 +82,14 @@ The modular experiment [`novel_context_experiment.py`](novel_context_experiment.
 
 Each event has the six available attributes: team-side indicator, event category, x, y, elapsed-interval bucket, and coarse success indicator. No unavailable player, league, injury, formation, or transfer variables are fabricated. All history is constructed within a match. For fair comparison, all four variants drop the first five events of every match and therefore predict **identical targets**. The training recipe is the same authors' MLP (three 196-unit hidden layers, dropout 0.3, Adam, seed 42, 30 epochs). Comparison metrics are next-event accuracy and macro F1.
 
+**Check the new feature logic first (no real dataset or GPU needed):**
+
+```powershell
+py -3.12 -m unittest -v test_novel_context.py
+```
+
+These tests verify that lagged events cannot cross match boundaries, all four variants use identical eligible rows, and transition features contain only previous-event information. They are feature-construction tests, not a claim that training finished.
+
 **Run from inside this folder (PowerShell):**
 
 ```powershell
