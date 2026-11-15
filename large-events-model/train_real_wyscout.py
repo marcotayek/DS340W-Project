@@ -15,13 +15,19 @@ FEATURES = ['prev_h', 'prev_e', 'prev_x', 'prev_y', 'prev_t', 'prev_a']
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', default='real_wyscout')
+    parser.add_argument('--split', choices=['test','val'], default='test',
+                        help='Test for development; val only for final frozen evaluation')
+    parser.add_argument('--final-eval', action='store_true',
+                        help='Required to unlock the held-out validation set')
     args = parser.parse_args()
+    if args.split == 'val' and not args.final_eval:
+        parser.error('Validation is sealed. Use --split val --final-eval only after model selection is frozen.')
     folder = Path(args.data)
     if not folder.is_dir():
         raise SystemExit(f'Folder not found: {folder.resolve()}')
     results = {'dataset': 'Public Wyscout 2017/18, England', 'model': 'HistGradientBoosting previous-event baseline', 'metrics': {}}
     for target in ('e', 'x', 'y', 't'):
-        train_path, val_path = folder / f'train_{target}.csv', folder / f'val_{target}.csv'
+        train_path, val_path = folder / f'train_{target}.csv', folder / f'{args.split}_{target}.csv'
         train = pd.read_csv(train_path)
         val = pd.read_csv(val_path)
         x_train, y_train = train[FEATURES], train['target']
@@ -42,7 +48,8 @@ def main():
                 scores['mae_t_units'] = scores['mae']
         results['metrics'][target] = scores
         print(f'{target}: ' + ', '.join(f'{key}={value:.4f}' for key, value in scores.items()), flush=True)
-    path = folder / 'baseline_metrics.json'
+    results['evaluation_split'] = args.split
+    path = folder / f'baseline_{args.split}_metrics.json'
     path.write_text(json.dumps(results, indent=2), encoding='utf-8')
     print(f'\nSaved metrics: {path.resolve()}')
     print('NOTE: This is a simplified baseline, NOT the original authors\' LEM or exact paper reproduction.')
