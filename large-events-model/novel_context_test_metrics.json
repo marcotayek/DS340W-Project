@@ -1,0 +1,55 @@
+{
+  "provenance": "Transcribed from user-provided PowerShell console output on 2026-11-15; rounded to four decimal places, not the original locally generated full-precision JSON file.",
+  "command": "py -3.12 novel_context_experiment.py --data real_wyscout_70_20_10 --epochs 30 --split test",
+  "dataset": "Public Wyscout England 2017/18; adapted authors' MLP; not exact paper reproduction",
+  "split": "test",
+  "validation_evaluated": false,
+  "device": "cuda",
+  "epochs": 30,
+  "train_rows_common": 115135,
+  "evaluation_rows_common": 33143,
+  "results": [
+    {
+      "variant": "previous_1",
+      "history_events": 1,
+      "transition_features": false,
+      "n_features": 6,
+      "accuracy": 0.6041,
+      "macro_f1": 0.303,
+      "train_loss_epoch_30": 1.2835
+    },
+    {
+      "variant": "previous_3",
+      "history_events": 3,
+      "transition_features": false,
+      "n_features": 18,
+      "accuracy": 0.6306,
+      "macro_f1": 0.3636,
+      "train_loss_epoch_30": 1.2074
+    },
+    {
+      "variant": "previous_5",
+      "history_events": 5,
+      "transition_features": false,
+      "n_features": 30,
+      "accuracy": 0.6299,
+      "macro_f1": 0.3562,
+      "train_loss_epoch_30": 1.2037
+    },
+    {
+      "variant": "previous_5_transitions",
+      "history_events": 5,
+      "transition_features": true,
+      "n_features": 42,
+      "accuracy": 0.6322,
+      "macro_f1": 0.3639,
+      "train_loss_epoch_30": 1.19
+    }
+  ],
+  "relative_to_same_sample_one_event": {
+    "best_variant": "previous_5_transitions",
+    "accuracy_absolute_gain": 0.0281,
+    "accuracy_percentage_point_gain": 2.81,
+    "macro_f1_absolute_gain": 0.0609
+  }
+}
