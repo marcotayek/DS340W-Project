@@ -50,6 +50,25 @@ py -3.12 train_authors_mlp_real.py --data real_wyscout_70_20_10 --epochs 30 --sp
 
 Do not use validation scores to tune the model. Note: the MLP command retrains with the chosen configuration before final evaluation; for a strictly frozen-model evaluation, retain the test-stage model checkpoints and load those weights instead. The `--final-eval` flag is a deliberate procedural guard, not a technical access restriction.
 
+## New 70/20/10 experiment — observed test results (November 2026)
+
+The updated scripts were run locally on 100 matches. The split was **70 training / 20 test / 10 validation matches**. Preprocessing yielded **115,415 training**, **33,223 test**, and **17,264 validation** usable next-event examples. The validation set was generated but **has not been evaluated**.
+
+| Test metric | Gradient boosting baseline | Adapted authors' MLP (30 epochs) |
+|---|---:|---:|
+| Event accuracy (higher better) | 0.6024 | **0.6036** |
+| Event macro F1 (higher better) | **0.3205** | 0.3129 |
+| X normalized MAE (lower better) | **0.1727** | 0.1753 |
+| X R² (higher better) | **0.2287** | 0.2037 |
+| Y normalized MAE (lower better) | **0.2351** | 0.2399 |
+| Y R² (higher better) | **0.1948** | 0.1671 |
+| Time MAE (lower better) | **0.5518** | 0.5685 |
+| Time R² (higher better) | **0.4321** | 0.4013 |
+
+The adapted MLP slightly improved event accuracy by 0.12 percentage points, but the baseline did better on the other listed metrics. The MLP completed all 30 epochs for each of its four prediction targets on CUDA.
+
+**Provenance:** These numbers were transcribed from the local PowerShell logs and stored in [`test_results_70_20_10.json`](test_results_70_20_10.json). The original generated `baseline_test_metrics.json`, `authors_mlp_test_metrics.json`, and `split_manifest.json` remain on the local machine and have **not** been uploaded. The match-level assignments cannot be audited from the summary alone. The test results are not final validation results.
+
 ## Historical results — OLD 80/20 experiment (not new 70/20/10 scores)
 
 | Metric | Gradient boosting | Adapted authors' MLP (30 epochs) |
@@ -70,7 +89,8 @@ The MLP's event accuracy advantage was only 0.05 percentage points in the **old 
 - `train_real_wyscout.py`: histogram gradient boosting baseline.
 - `train_authors_mlp_real.py`: adapted training using the original authors' MLP class.
 - `0001 Train Tabular LEMs.py`: authors' original training script containing the MLP class.
-- `baseline_metrics.json` and `authors_mlp_30epochs_metrics.json`: saved metrics from the experiment.
+- `test_results_70_20_10.json`: transcribed local-run split counts and new test metrics (not the original output files).
+- `baseline_metrics.json` and `authors_mlp_30epochs_metrics.json`: saved metrics from the historical 80/20 experiment.
 
 ## Limitations and attribution
 Public Wyscout event names and tags do not perfectly match the paper's Wyscout V3 schema. Event categories and success-related fields are approximated, and the simplified model uses only the previous event's six attributes. We do not claim equivalence with the paper's full training setup, dataset, or reported performance. The original model implementation belongs to its authors; see https://github.com/nvsclub/LargeEventsModel and retain their original license/attribution when redistributing their source.
