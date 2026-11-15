@@ -35,7 +35,13 @@ def main():
     ap.add_argument('--batch-size', type=int, default=1024)
     ap.add_argument('--hidden', type=int, default=196)
     ap.add_argument('--learning-rate', type=float, default=0.001)
+    ap.add_argument('--split', choices=['test','val'], default='test',
+                    help='Test for development; val only for final frozen evaluation')
+    ap.add_argument('--final-eval', action='store_true',
+                    help='Required to unlock the held-out validation set')
     args = ap.parse_args()
+    if args.split == 'val' and not args.final_eval:
+        ap.error('Validation is sealed. Use --split val --final-eval only after model selection is frozen.')
     if args.epochs < 1 or args.batch_size < 1: ap.error('epochs and batch-size must be positive')
     folder = Path(args.data)
     source = Path(args.authors_script)
@@ -48,10 +54,10 @@ def main():
     output = {'dataset': 'Public Wyscout England 2017/18 (80 matches)',
               'model': 'Original authors MLP class; adapted six-feature previous-event task',
               'exact_reproduction': False, 'epochs': args.epochs, 'hidden_sizes': [args.hidden]*3,
-              'metrics': {}}
+              'evaluation_split': args.split, 'metrics': {}}
     for task in TASKS:
         tr = pd.read_csv(folder / f'train_{task}.csv')
-        va = pd.read_csv(folder / f'val_{task}.csv')
+        va = pd.read_csv(folder / f'{args.split}_{task}.csv')
         # Scale features using training-only constants, avoiding validation leakage.
         scales = np.array([1., 31., 100., 100., 100., 1.], dtype=np.float32)
         xtr = (tr[FEATURES].to_numpy(dtype=np.float32) / scales).copy()
@@ -110,8 +116,8 @@ def main():
                     'feature_scales': scales.tolist(), 'hidden_sizes': [args.hidden]*3,
                     'classes': classes.tolist() if task == 'e' else None,
                     'target_scale': None if task == 'e' else target_scale},
-                   folder / f'authors_mlp_{task}.pt')
-    path = folder / 'authors_mlp_metrics.json'
+                   folder / f'authors_mlp_{args.split}_{task}.pt')
+    path = folder / f'authors_mlp_{args.split}_metrics.json'
     path.write_text(json.dumps(output, indent=2), encoding='utf-8')
     print(f'\nSaved metrics: {path.resolve()}')
     print('NOTE: Original authors MLP architecture, adapted task; NOT an exact paper reproduction.')
