@@ -51,7 +51,7 @@ def main():
     p.add_argument('--events', required=True)
     p.add_argument('--matches', required=True)
     p.add_argument('--output',default='real_wyscout')
-    p.add_argument('--max-matches',type=int,default=80,help='Use 80 matches for a manageable first run; 0=all')
+    p.add_argument('--max-matches',type=int,default=100,help='Use 100 matches: first 90 for train/test, next 10 never-before-used holdout; 0=all')
     args=p.parse_args()
     with open(args.matches,encoding='utf-8') as f: matches=json.load(f)
     meta={}
@@ -89,17 +89,25 @@ def main():
     # Explicitly no unsupported game-state columns are fabricated.
     out=Path(args.output); out.mkdir(parents=True,exist_ok=True)
     match_ids=sorted(df.match_id.unique())
-    rng=np.random.default_rng(42); rng.shuffle(match_ids)
+    # Preserve the original experiment's first 80 match IDs as previously seen.
+    # With 100 matches, the final 10 IDs are from outside the old 80-match study.
+    # Shuffle ONLY the development pool, never mix held-out matches back into it.
     # Deterministic 70/20/10 split by MATCH, not by event.
     # Freeze this assignment before model development; do not inspect validation.
     n=len(match_ids)
     if n < 10: raise SystemExit('Need at least 10 matches for a three-way split')
     n_train=int(n*0.70)
     n_test=int(n*0.20)
-    split_ids={'train': set(match_ids[:n_train]),
-               'test': set(match_ids[n_train:n_train+n_test]),
-               'val': set(match_ids[n_train+n_test:])}
+    dev_ids=match_ids[:n_train+n_test]
+    heldout_ids=match_ids[n_train+n_test:]
+    rng=np.random.default_rng(42)
+    rng.shuffle(dev_ids)
+    split_ids={'train': set(dev_ids[:n_train]),
+               'test': set(dev_ids[n_train:]),
+               'val': set(heldout_ids)}
     assert all(split_ids[k] for k in split_ids)
+    if n < 100:
+        print('WARNING: With fewer than 100 matches, some validation matches may overlap the previous 80-match experiment. Use --max-matches 100 for a fresh holdout.')
     assert not (split_ids['train'] & split_ids['test'] or
                 split_ids['train'] & split_ids['val'] or
                 split_ids['test'] & split_ids['val'])
