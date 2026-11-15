@@ -90,10 +90,24 @@ def main():
     out=Path(args.output); out.mkdir(parents=True,exist_ok=True)
     match_ids=sorted(df.match_id.unique())
     rng=np.random.default_rng(42); rng.shuffle(match_ids)
-    cutoff=max(1,int(len(match_ids)*.8))
-    train_ids=set(match_ids[:cutoff]); val_ids=set(match_ids[cutoff:])
-    if not val_ids: raise SystemExit('Need at least two matches for validation')
-    for split, subset in [('train',df[df.match_id.isin(train_ids)]),('val',df[df.match_id.isin(val_ids)])]:
+    # Deterministic 70/20/10 split by MATCH, not by event.
+    # Freeze this assignment before model development; do not inspect validation.
+    n=len(match_ids)
+    if n < 10: raise SystemExit('Need at least 10 matches for a three-way split')
+    n_train=int(n*0.70)
+    n_test=int(n*0.20)
+    split_ids={'train': set(match_ids[:n_train]),
+               'test': set(match_ids[n_train:n_train+n_test]),
+               'val': set(match_ids[n_train+n_test:])}
+    assert all(split_ids[k] for k in split_ids)
+    assert not (split_ids['train'] & split_ids['test'] or
+                split_ids['train'] & split_ids['val'] or
+                split_ids['test'] & split_ids['val'])
+    manifest={'seed':42,'split_unit':'match','requested_ratio':[0.70,0.20,0.10],
+              'match_counts':{k:len(v) for k,v in split_ids.items()},
+              'match_ids':{k:sorted(int(x) for x in v) for k,v in split_ids.items()}}
+    (out/'split_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
+    for split, subset in [(name,df[df.match_id.isin(ids)]) for name,ids in split_ids.items()]:
         raw=subset[['match_id','h','e','x','y','t','a']].copy()
         raw.to_csv(out/f'{split}_raw_events.csv',index=False)
         # Construct next-event supervised rows; no cross-match context leakage.
