@@ -1,0 +1,49 @@
+{
+  "description": "Transcribed from user-provided PowerShell output; not the original locally generated metrics or split manifest files.",
+  "dataset": "Public Wyscout England 2017-18",
+  "split_unit": "match",
+  "matches": {
+    "train": 70,
+    "test": 20,
+    "validation": 10
+  },
+  "real_events": {
+    "train": 115485,
+    "test": 33243,
+    "validation": 17274
+  },
+  "usable_examples": {
+    "train": 115415,
+    "test": 33223,
+    "validation": 17264
+  },
+  "evaluation_split": "test",
+  "validation_evaluated": false,
+  "baseline": {
+    "event_accuracy": 0.6024,
+    "event_macro_f1": 0.3205,
+    "x_mae": 17.2716,
+    "x_r2": 0.2287,
+    "x_mae_normalized": 0.1727,
+    "y_mae": 23.512,
+    "y_r2": 0.1948,
+    "y_mae_normalized": 0.2351,
+    "time_mae": 0.5518,
+    "time_r2": 0.4321
+  },
+  "adapted_authors_mlp": {
+    "epochs": 30,
+    "device": "cuda",
+    "event_accuracy": 0.6036,
+    "event_macro_f1": 0.3129,
+    "x_mae": 17.5341,
+    "x_r2": 0.2037,
+    "x_mae_normalized": 0.1753,
+    "y_mae": 23.9888,
+    "y_r2": 0.1671,
+    "y_mae_normalized": 0.2399,
+    "time_mae": 0.5685,
+    "time_r2": 0.4013
+  },
+  "limitations": "Adapted task, public dataset and simplified features; not exact reproduction."
+}
