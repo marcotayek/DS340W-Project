@@ -96,9 +96,24 @@ These tests verify that lagged events cannot cross match boundaries, all four va
 py -3.12 novel_context_experiment.py --data real_wyscout_70_20_10 --epochs 30 --split test
 ```
 
-The program prints a four-row table and saves `real_wyscout_70_20_10/novel_context_test_metrics.json`. **The novel variant scores remain pending until the program is run on local real data.** The earlier one-event MLP result (accuracy 0.6036, macro F1 0.3129) uses a slightly larger sample and is a historical reference, **not** a fair same-row comparison. The 10-match validation split remains sealed; test mode does not even open its CSV. Final validation is guarded by `--split val --final-eval`.
+The program prints a four-row table and saves `real_wyscout_70_20_10/novel_context_test_metrics.json`. **The experiment was run locally and the observed results are reported in the following section.** The earlier one-event MLP result (accuracy 0.6036, macro F1 0.3129) uses a slightly larger sample and is a historical reference, **not** a fair same-row comparison. The 10-match validation split remains sealed; test mode does not even open its CSV. Final validation is guarded by `--split val --final-eval`.
 
 If additional event history improves macro F1, it supports the limited interpretation that recent game events add predictive information in this public-data adaptation. It does **not** directly establish whether an attacker improved after transferring. The eventual transfer study needs separate player-season, league, and role context.
+
+## Novel contribution — observed four-way test comparison (November 15, 2026)
+
+The new context-history experiment **ran successfully on CUDA** for 30 epochs per variant. The same **115,135 training examples** and **33,143 test examples** (after excluding the first five events per match) were used for all four models. The 10-match validation set remains **unevaluated**.
+
+| Model variant | Input features | Test accuracy | Test macro F1 |
+|---|---:|---:|---:|
+| Previous 1 event | 6 | 0.6041 | 0.3030 |
+| Previous 3 events | 18 | 0.6306 | 0.3636 |
+| Previous 5 events | 30 | 0.6299 | 0.3562 |
+| Previous 5 events + transitions | 42 | **0.6322** | **0.3639** |
+
+Relative to the **one-event model trained and tested on the same rows**, the five-event + transitions model improved event accuracy by **2.81 percentage points** (60.41% to 63.22%) and macro F1 by **0.0609** (0.3030 to 0.3639). The three-event model was close to the best (63.06% accuracy, 0.3636 macro F1) with fewer features. More history was **not** uniformly better: five events without transitions scored below three events on both measures. These observations motivate a model-complexity tradeoff rather than an unconditional claim that more features always help.
+
+**Source:** User-provided PowerShell output from `py -3.12 novel_context_experiment.py --data real_wyscout_70_20_10 --epochs 30 --split test`. A faithful, rounded transcript is stored in [`novel_context_test_metrics.json`](novel_context_test_metrics.json); the original full-precision locally generated JSON file remains on the Windows PC and has not been uploaded. These are **adapted public-data test results, not a replication of the parent paper's benchmark and not held-out final validation results**. Because these are single-seed runs, they do not yet establish robustness across random initializations or matches.
 
 ## Historical results — OLD 80/20 experiment (not new 70/20/10 scores)
 
@@ -120,7 +135,8 @@ The MLP's event accuracy advantage was only 0.05 percentage points in the **old 
 - `train_real_wyscout.py`: histogram gradient boosting baseline.
 - `train_authors_mlp_real.py`: adapted training using the original authors' MLP class.
 - `0001 Train Tabular LEMs.py`: authors' original training script containing the MLP class.
-- `test_results_70_20_10.json`: transcribed local-run split counts and new test metrics (not the original output files).
+- `test_results_70_20_10.json`: transcribed original baseline and MLP test metrics (not original local output files).
+- `novel_context_test_metrics.json`: observed four-variant novel-approach comparison transcribed from the PowerShell output.
 - `baseline_metrics.json` and `authors_mlp_30epochs_metrics.json`: saved metrics from the historical 80/20 experiment.
 
 ## Limitations and attribution
