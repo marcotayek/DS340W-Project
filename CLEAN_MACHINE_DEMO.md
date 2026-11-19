@@ -46,7 +46,7 @@ beyond the GitHub ZIP itself.
    installed, ask your lab administrator for a machine with Python. Do not
    claim that it was tested on the new machine until the recording passes.
 
-7. Show the terminal output and the new
+7. (Optional stronger proof) Run the unit tests in the same terminal:\n\n   **Windows**: `py -3 -m unittest -v test_run_final.py`\n\n   **macOS / Linux**: `python3 -m unittest -v test_run_final.py`\n\n   The tests check both the Ridge linear solver and reproducibility of the paper's transfer results.\n\n8. Show the terminal output and the new
    `results/reproduction_report.json` file. The script verifies every
    published transfer dataset count and metric within tolerance and displays:
 
@@ -59,12 +59,12 @@ beyond the GitHub ZIP itself.
    PASS: 12 checks match published paper numbers.
    ```
 
-8. Explain the key lines: load the dataset, select ONLY pre-transfer features,
+9. Explain the key lines: load the dataset, select ONLY pre-transfer features,
    make the chronological split, fit normalization ONLY on the training data,
    solve Ridge regression with a fixed penalty, compare against a training-mean
    prediction, calculate MAE/RMSE/R², and verify the paper values.
-9. Show the matching table in your paper. Stop the Zoom recording.
-10. Upload the Zoom recording to Kaltura as **Unlisted** and submit its link.
+10. Show the matching table in your paper. Stop the Zoom recording.
+11. Upload the Zoom recording to Kaltura as **Unlisted** and submit its link.
 
 ## Troubleshooting
 - **'py' is not recognized**: use `python run_final.py` or
