@@ -1,32 +1,51 @@
 # Context-Aware Transfer Analysis of Premier League Attackers
 
-## Research Question
-Which Premier League attackers improve after moving to another league, and which changes in context help explain that improvement?
+## Research question
+Which Premier League attackers change their performance after moving to a different European domestic league, and which playing-environment variables are associated with that difference?
 
-## Overview
-This project compares attacking performance before and after real transfers out of the Premier League. It combines per-90 player statistics with team, league, tactical, and playing-time context.
+This public repository is the DS340W research project of Marc Otayek Chreim (Penn State, Fall 2026). The main *transfer* analysis and the separate *Wyscout next-event* experiment are distinct and should not be conflated.
 
-## Parent-paper connection
-- Paper 1 motivates xG and explainable attacking metrics.
-- Paper 2 motivates team context, formation, and interpretable modeling.
-- Paper 3 motivates the idea that player performance changes with environment.
+## Main transfer dataset
+- **[Transfer modeling dataset](data/pl_outgoing_attacker_transfers.csv):** 74 consecutive-season EPL-to-other-league attacker observations involving 71 unique players.
+- **[Dataset documentation](DATASET_README.md)** and **[field dictionary](DATA_DICTIONARY.csv)** explain inputs, provenance, and transfer-pair construction.
+- Destination counts: La Liga 27; Serie A 21; Bundesliga 13; Ligue 1 13.
+- The 2025/26 player-stat supplement is available at [data/player_stats_2025_26.csv](data/player_stats_2025_26.csv).
 
-## Methodology
-1. Identify Premier League attackers who transferred abroad.
-2. Create pre-transfer and post-transfer windows.
-3. Normalize performance per 90 minutes.
-4. Add contextual variables such as team strength, league strength, role, formation, age, and playing time.
-5. Create before/after change features.
-6. Fit an interpretable Ridge/Lasso baseline.
-7. Compare with Random Forest or XGBoost.
-8. Explain the stronger model with feature importance or SHAP.
+The source is Understat-derived season-level statistical data. Consecutive-season moves are **candidate transfer pairs**, not independently verified transfer dates. Same-season ambiguous moves are separate. The league-average team xG variable is a *scoring-environment proxy*, not a direct measure of league strength.
 
-## Planned features
-Player: goals/90, assists/90, shots/90, xG/90, xA/90, minutes, goals-minus-xG/90.
-Context: team strength, league strength, possession/attacking level, role, formation, age, playing-time change.
+## Reproduce the initial transfer prediction baseline
+Install project dependencies and run:
 
-## Current status
-The project has been narrowed from general football prediction to individual transfer improvement. The pre/post framework, per-90 normalization, key attacking variables, contextual variables, and model strategy have been defined.
+```bash
+python -m pip install -r requirements.txt
+python src/transfer_baseline.py
+```
 
-## Data
-Add the actual raw/processed project data when redistribution is allowed. Otherwise include the exact source link and reproducible access instructions.
+This script uses a **chronological holdout**, training on pre-transfer seasons before 2022–23 and testing on 2022–23 onward. It uses **pre-transfer predictors** and the known destination league only; post-transfer performance is the prediction target, not a feature. The model is Ridge regression with a fixed penalty (alpha = 10), compared against a training-mean baseline. The script writes `results/exploratory_transfer_ridge.json` when executed.
+
+Preliminary figures, rounded (51 train / 23 test):
+
+| Test metric | Training-mean baseline | Ridge |
+|---|---:|---:|
+| MAE | 0.1653 | 0.1574 |
+| RMSE | 0.2075 | 0.2004 |
+| R² | -0.0237 | 0.0453 |
+
+**Interpretation:** modest preliminary predictive gain, not a validated transfer-causality claim. Results have not been assessed with nested temporal cross-validation or uncertainty intervals. Random Forest and XGBoost are methodological candidates, **not completed transfer-model benchmarks** here.
+
+## Separate supporting event-sequence experiment
+The [large-events-model](large-events-model) folder adapts a published event-model architecture to public Wyscout 2017/18 England match events. Its novel input-history experiment compares 1, 3, and 5 previous events, optionally with transitions, on common train/test rows. Reported same-row test accuracies ranged from **0.6041** (one previous event) to **0.6322** (five events + transitions); macro F1 ranged from 0.3030 to 0.3639. The **10-match held-out validation set has not been evaluated**. Logs were transcribed from a separate local experiment rather than uploaded full-precision run artifacts. **Event prediction results do not establish individual improvement after a transfer.** See the folder's README for commands and scope.
+
+## Research connections and future work
+Three parent-paper directions inform the project:
+1. Explainable expected-goals analysis (measurement and interpretation).
+2. Team formation/player quality (context).
+3. Large Events Models (temporal match-event context).
+
+Future experiments: hierarchical mixed-effects regression; matched-player difference-in-differences; player-style clustering and destination-league interaction analysis.
+
+## Reproducibility and limitations
+- Recreate transfer source data with `python fetch_2025_26_stats.py` and `python build_dataset.py` as described in [DATASET_README.md](DATASET_README.md). Source availability and historical aggregation conventions may affect reproduction.
+- Transfer timing, loans, season aggregates, position labels, and minutes selection require further auditing.
+- No causal conclusions are warranted from raw pre/post comparisons.
+- Repo contains partial notebook scaffolds and historical research stages; see scripts and metrics JSONs for implemented work.
