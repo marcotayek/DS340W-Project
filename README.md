@@ -1,4 +1,4 @@
-# Context-Aware Transfer Analysis of Premier League Attackers
+> **For the professor's new-computer demonstration, follow [CLEAN_MACHINE_DEMO.md](CLEAN_MACHINE_DEMO.md). Run `python run_final.py` from the downloaded repository root. No third-party packages are needed.**\n\n# Context-Aware Transfer Analysis of Premier League Attackers
 
 ## Research question
 Which Premier League attackers change their performance after moving to a different European domestic league, and which playing-environment variables are associated with that difference?
@@ -14,12 +14,13 @@ This public repository is the DS340W research project of Marc Otayek Chreim (Pen
 The source is Understat-derived season-level statistical data. Consecutive-season moves are **candidate transfer pairs**, not independently verified transfer dates. Same-season ambiguous moves are separate. The league-average team xG variable is a *scoring-environment proxy*, not a direct measure of league strength.
 
 ## Reproduce the initial transfer prediction baseline
-Install project dependencies and run:
+For the **required new-computer demonstration**, run only:
 
 ```bash
-python -m pip install -r requirements.txt
-python src/transfer_baseline.py
+python run_final.py
 ```
+
+No third-party packages are required for this authoritative transfer-results entry point. The optional scikit-learn implementation remains in `src/transfer_baseline.py` for comparison and requires `pip install -r requirements.txt`.
 
 This script uses a **chronological holdout**, training on pre-transfer seasons before 2022–23 and testing on 2022–23 onward. It uses **pre-transfer predictors** and the known destination league only; post-transfer performance is the prediction target, not a feature. The model is Ridge regression with a fixed penalty (alpha = 10), compared against a training-mean baseline. The script writes `results/exploratory_transfer_ridge.json` when executed.
 
