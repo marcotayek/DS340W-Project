@@ -1,0 +1,33 @@
+name: Reproduce final DS340W transfer results
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reproducibility:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+    steps:
+      - name: Check out complete repository
+        uses: actions/checkout@v4
+      - name: Set up clean Python environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run final published experiment, with metric assertions
+        run: python run_final.py
+      - name: Run clean-machine tests
+        run: python -m unittest -v test_run_final.py
+      - name: Archive reproduction report
+        uses: actions/upload-artifact@v4
+        with:
+          name: reproduction-report-py${{ matrix.python-version }}
+          path: results/reproduction_report.json
