@@ -158,3 +158,5 @@ def run(data=DATA, output=OUTPUT, check=True):
 
 if __name__ == "__main__":
     run()
+    from ablation_experiment import run_ablation
+    run_ablation()
