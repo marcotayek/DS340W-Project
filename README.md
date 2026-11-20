@@ -34,6 +34,36 @@ Preliminary figures, rounded (51 train / 23 test):
 
 **Interpretation:** modest preliminary predictive gain, not a validated transfer-causality claim. Results have not been assessed with nested temporal cross-validation or uncertainty intervals. Random Forest and XGBoost are methodological candidates, **not completed transfer-model benchmarks** here.
 
+## Completed novel experiment: controlled context-feature ablation
+
+The implemented novelty is a **same-split Ridge ablation**, evaluated on the
+same 51 earlier training transfers and 23 later held-out transfers. The target
+is change in expected attacking output per 90. Each variant uses the same
+regularization (alpha=10) and scales its features using **training rows only**.
+
+| Model | Feature count | Test MAE ↓ | Test RMSE ↓ | Test R² ↑ |
+|---|---:|---:|---:|---:|
+| Train-mean reference | 0 | 0.1653 | 0.2075 | -0.0237 |
+| **Pre-transfer player only** | 5 | **0.1545** | **0.1985** | **0.0631** |
+| Player + team proxy | 6 | 0.1618 | 0.2040 | 0.0109 |
+| Player + team + league context | 10 | 0.1574 | 0.2004 | 0.0453 |
+
+**Actual finding:** contrary to the initial context-improvement hypothesis,
+the player-only variant performed best on this small chronological holdout.
+This **does not** demonstrate that real team/league context is irrelevant:
+the available proxies are limited, and this is one small test split with no
+significance test. No causal conclusions are supported.
+
+Run `python run_final.py` for **both** the original verified reference
+comparison and the new ablation. Results are written to
+`results/reproduction_report.json` and `results/context_ablation.json`.
+The entry point requires no pip installation.
+
+Implementation: [ablation_experiment.py](ablation_experiment.py).
+The [unit tests](test_run_final.py) verify the metric values and train/test
+counts. [GitHub Actions](.github/workflows/reproducibility.yml) checks the
+whole command on fresh Python versions.
+
 ## Separate supporting event-sequence experiment
 The [large-events-model](large-events-model) folder adapts a published event-model architecture to public Wyscout 2017/18 England match events. Its novel input-history experiment compares 1, 3, and 5 previous events, optionally with transitions, on common train/test rows. Reported same-row test accuracies ranged from **0.6041** (one previous event) to **0.6322** (five events + transitions); macro F1 ranged from 0.3030 to 0.3639. The **10-match held-out validation set has not been evaluated**. Logs were transcribed from a separate local experiment rather than uploaded full-precision run artifacts. **Event prediction results do not establish individual improvement after a transfer.** See the folder's README for commands and scope.
 
