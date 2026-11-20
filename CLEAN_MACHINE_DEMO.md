@@ -2,7 +2,7 @@
 
 **This is the exact procedure for a brand-new PSU computer.** It reproduces
 the **main Premier League outgoing-attacker transfer results in the paper**.
-The primary command uses only Python's standard library; there is no package
+The primary command reproduces both the original baseline AND the context-feature ablation using only Python's standard library; there is no package
 installation, API token, GPU, local Windows path, or external dataset download
 beyond the GitHub ZIP itself.
 
@@ -83,3 +83,22 @@ This experiment measures predictive association for **Premier League attackers
 moving to La Liga, Serie A, Bundesliga and Ligue 1**. The league scoring
 environment proxy is not a formal league-strength rating; pre/post comparison
 does not prove causal improvement.
+
+## NEW: what the novelty demonstration must also show
+
+The same \`python run_final.py\` command automatically runs the three-way
+context ablation, after the original transfer-baseline checks. The paper's
+observed held-out values (51 training / 23 test) are:
+
+| Model | MAE | RMSE | R2 |
+|---|---:|---:|---:|
+| Training-mean reference | 0.1653 | 0.2075 | -0.0237 |
+| Player-only Ridge (5 features) | 0.1545 | 0.1985 | 0.0631 |
+| Player + team (6 features) | 0.1618 | 0.2040 | 0.0109 |
+| Full context (10 features) | 0.1574 | 0.2004 | 0.0453 |
+
+After running, open \`results/context_ablation.json\` and show it matches the
+**updated** paper. Explain that adding context proxies did **not** improve
+prediction over player-only Ridge on this small holdout. This is the study's
+implemented novelty: a controlled feature ablation, not a claim of a causal
+transfer effect. The unit-test command also checks all three ablation scores.
