@@ -18,5 +18,24 @@ class ReproductionTests(unittest.TestCase):
             self.assertEqual(result["train"], EXPECTED["train"])
             self.assertEqual(result["test"], EXPECTED["test"])
 
+    def test_context_ablation_and_expected_scores(self):
+        from ablation_experiment import run_ablation
+        with tempfile.TemporaryDirectory() as directory:
+            result = run_ablation(output=Path(directory) / "ablation.json", verbose=False)
+            self.assertEqual(result["train_rows"], 51)
+            self.assertEqual(result["test_rows"], 23)
+            targets = {
+                "player_only": (0.1545, 0.1985, 0.0631),
+                "player_team": (0.1618, 0.2040, 0.0109),
+                "full_context": (0.1574, 0.2004, 0.0453),
+            }
+            for name, (mae, rmse, r2) in targets.items():
+                values = result["ridge_variants"][name]
+                self.assertAlmostEqual(values["mae"], mae, delta=0.00005)
+                self.assertAlmostEqual(values["rmse"], rmse, delta=0.00005)
+                self.assertAlmostEqual(values["r2"], r2, delta=0.00005)
+            self.assertLess(result["ridge_variants"]["player_only"]["rmse"],
+                            result["ridge_variants"]["full_context"]["rmse"])
+
 if __name__ == "__main__":
     unittest.main()
