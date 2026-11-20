@@ -30,4 +30,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: reproduction-report-py${{ matrix.python-version }}
-          path: |\n            results/reproduction_report.json\n            results/context_ablation.json
+          path: |
+            results/reproduction_report.json
+            results/context_ablation.json
